@@ -1,0 +1,31 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 46bf0bc234ab991873d881239d29a8d85ebb0e544db1d02ee6fef20786dbebac
+
+name:           surreal
+version:        0.1.0.0
+description:    Please see the README.md for info about this package
+author:         Julia DeFoor
+maintainer:     juliagracedefoor@gmail.com
+copyright:      Julia DeFoor
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+library
+  exposed-modules:
+      Surreal
+  other-modules:
+      Paths_surreal
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , containers
+  default-language: Haskell2010

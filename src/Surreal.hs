@@ -22,6 +22,9 @@ one = fromLists [zero] []
 minusone :: Surreal
 minusone = fromLists [] [zero]
 
+shadowzero :: Surreal
+shadowzero = fromLists [zero] [zero]
+
 -- Axiom one: Is this a valid surreal number?
 isValid :: Surreal -> Bool
 isValid a =
@@ -94,13 +97,14 @@ printWith names = putStrLn . showWith names
 
 -- Name substitutions for the three fundamental surreal numbers
 fundamentalNames :: Map Surreal String
-fundamentalNames = Map.fromList [(zero, "0"), (one, "1"), (minusone, "-1")]
+fundamentalNames = Map.fromList [(zero, "0"), (one, "1"), (minusone, "-1"), (shadowzero, "&0")]
 
 -- Name substitutions for the integers between -1000 and 1000
 integerNames :: Map Surreal String
 integerNames =
     let nums = [-1000 .. 1000]
-    in  Map.fromList $ zip (map fromInt nums) (map show nums)
+        integerMap = Map.fromList $ zip (map fromInt nums) (map show nums)
+    in  Map.union integerMap fundamentalNames
 
 -- For printing with no name substitutions
 noNames :: Map Surreal String

@@ -25,3 +25,16 @@ dependencies:
 
 library:
   source-dirs: src
+
+tests:
+  surreal-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - surreal
+      - hspec
+      - QuickCheck

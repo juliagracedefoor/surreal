@@ -47,22 +47,49 @@ a <== b =
 a .< b = a <== b && not (b <== a)
 
 (.>) :: Surreal -> Surreal -> Bool
-a .> b = b <== a && not (a <== b)
+a .> b = not (a <== b) && b <== a
 
 -- Definition: Are two surreal numbers alike in value?
 like :: Surreal -> Surreal -> Bool
-like a b = a <== b && a >== b
+like a b = a <== b && b <== a
 
 (===) :: Surreal -> Surreal -> Bool
 (===) = like
+
+-- Definition: Are two surreal numbers adjacent? That is, not GT, LT, or EQ?
+-- (This can only be true if one of the numbers is not properly formed)
+adjacent :: Surreal -> Surreal -> Bool
+adjacent a b = not (a <== b) && not (b <== a)
 
 -- Definition: What is the additive inverse of a surreal number?
 neg :: Surreal -> Surreal
 neg a = fromSets (Set.map neg (right a)) (Set.map neg (left a))
 
 -- Definition: What is the sum of two surreal numbers?
---add :: Surreal -> Surreal -> Surreal
---add a b =
+-- note: VERY slow for numbers greater than 10
+add :: Surreal -> Surreal -> Surreal
+add a b =
+  let l = Set.union (Set.map (add b) (left a)) (Set.map (add a) (left b))
+      r = Set.union (Set.map (add b) (right a)) (Set.map (add a) (right b))
+  in fromSets (maxSet l) (minSet r)
+
+-- Subtract numbers by (a - b) = (a + (-b))
+sub :: Surreal -> Surreal -> Surreal
+sub a b = add a (neg b)
+
+-- Keep only the minimal number in a set
+minSet :: Set Surreal -> Set Surreal
+minSet s
+  | null s = s
+  | otherwise = Set.singleton minN
+  where minN = foldr1 (\x m -> if x <== m then x else m) s
+
+-- Keep only the maximal number in a set
+maxSet :: Set Surreal -> Set Surreal
+maxSet s
+  | null s    = s
+  | otherwise = Set.singleton maxN
+  where maxN = foldr1 (\x m -> if x >== m then x else m) s
 
 -- Construct a surreal number from two lists
 fromLists :: [Surreal] -> [Surreal] -> Surreal
@@ -77,6 +104,10 @@ fromInt :: Int -> Surreal
 fromInt 0 = zero
 fromInt a | a < 0 = fromLists [] [fromInt (a + 1)]
           | a > 0 = fromLists [fromInt (a - 1)] []
+
+-- Construct a surreal number from a left integer and a right integer
+between :: Int -> Int -> Surreal
+between l r = fromLists [fromInt l] [fromInt r]
 
 -- Create a string representation of a surreal number using names for certain values
 -- For example, "(( : ) : (( : ) : ))" might be replaced with "(0 : 1)"

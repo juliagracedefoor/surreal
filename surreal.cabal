@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 46bf0bc234ab991873d881239d29a8d85ebb0e544db1d02ee6fef20786dbebac
+-- hash: 7b2d0af42d7fb20a2c7712dcee1f25fd049ba07f400d51f08b571b5170711ccd
 
 name:           surreal
 version:        0.1.0.0
@@ -17,9 +17,12 @@ license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
+    ChangeLog.md
 
 library
   exposed-modules:
+      ISet
+      ISurreal
       Surreal
   other-modules:
       Paths_surreal
@@ -28,4 +31,20 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+  default-language: Haskell2010
+
+test-suite surreal-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_surreal
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      QuickCheck
+    , base >=4.7 && <5
+    , containers
+    , hspec
+    , surreal
   default-language: Haskell2010

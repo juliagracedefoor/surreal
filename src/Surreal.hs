@@ -69,13 +69,19 @@ neg a = fromSets (Set.map neg (right a)) (Set.map neg (left a))
 -- note: VERY slow for numbers greater than 10
 add :: Surreal -> Surreal -> Surreal
 add a b =
-  let l = Set.union (Set.map (add b) (left a)) (Set.map (add a) (left b))
-      r = Set.union (Set.map (add b) (right a)) (Set.map (add a) (right b))
-  in fromSets (maxSet l) (minSet r)
+  let sa = simplify a
+      sb = simplify b
+      l = Set.union (Set.map (add sb) (left sa)) (Set.map (add sa) (left sb))
+      r = Set.union (Set.map (add sb) (right sa)) (Set.map (add sa) (right sb))
+  in fromSets l r
 
 -- Subtract numbers by (a - b) = (a + (-b))
 sub :: Surreal -> Surreal -> Surreal
 sub a b = add a (neg b)
+
+-- Remove extraneous values from a surreal numbers left and right sets
+simplify :: Surreal -> Surreal
+simplify a = fromSets (maxSet . left $ a) (minSet . right $ a)
 
 -- Keep only the minimal number in a set
 minSet :: Set Surreal -> Set Surreal
@@ -116,11 +122,13 @@ showWith names a
     | nameExists
     = fromJust name
     | otherwise
-    = "(" ++ stringFromSet (left a) ++ " : " ++ stringFromSet (right a) ++ ")"
+    = "(" ++ stringFromSet (left a) ++ ":" ++ stringFromSet (right a) ++ ")"
   where
     name          = Map.lookup a names
     nameExists    = isJust name
-    stringFromSet = intercalate ", " . map (showWith names) . Set.toList
+    stringFromSet s
+      | null s = "•"
+      | otherwise = intercalate ", " . map (showWith names) . Set.toList $ s
 
 -- Equivalent to showWith, but as an IO action
 printWith :: Map Surreal String -> Surreal -> IO ()
